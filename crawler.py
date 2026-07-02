@@ -128,12 +128,12 @@ async def crawl(start_url, max_urls):
                             # Format the output log
                             text_out = f" | Text: '{info['text']}'" if info['text'] else ""
                             tooltip_out = f" | Tooltip: '{info['tooltip']}'" if info['tooltip'] else ""
-                            print(f"[*] Discovered ({len(visited)}): {link}{text_out}{tooltip_out}")
+                            print(f"\033[92m[+] Discovered ({len(visited)}): {link}{text_out}{tooltip_out}\033[0m")
                             
                             if len(visited) >= max_urls:
                                 break
 
-    print(f"\n[+] Total unique internal links found: {len(visited)}")
+    print(f"\n\033[92m[+] Total unique internal links found: {len(visited)}\033[0m")
     
     # Generate HTML report
     html_content = f"""<!DOCTYPE html>
@@ -186,7 +186,7 @@ async def crawl(start_url, max_urls):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(html_content)
         
-    print(f"[*] Report saved to {report_path}")
+    print(f"\033[92m[+] Report saved to {report_path}\033[0m")
     
     # Try to open the report automatically, handling macOS specifically 
     # to avoid AppleScript/encoding errors with cyrillic paths

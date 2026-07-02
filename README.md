@@ -1,55 +1,53 @@
-# Simple Web Crawler
+# UI Component Extractor
 
-A straightforward Python script that parses a given website URL from the terminal and collects all internal links/branches of that site. It uses Breadth-First Search (BFS) to map out the pages belonging to the same domain.
+A high-performance, asynchronous web crawler designed to map out website structures and extract raw HTML snippets of UI components for easy reuse and analysis. Built with `asyncio`, `aiohttp`, and `BeautifulSoup4`.
+
+## Features
+
+- **🚀 Asynchronous Turbo Crawling**: Utilizes `aiohttp` and `lxml` to process dozens of pages concurrently, offering massive speed improvements over synchronous scrapers.
+- **🧱 UI Component Extraction**: Automatically isolates and extracts the parent HTML blocks of links and buttons. Perfect for analyzing or borrowing styled components (especially useful for Tailwind CSS or Bootstrap sites).
+- **📝 Metadata Parsing**: Captures link text and accessibility tooltips (`title`, `aria-label`).
+- **📊 Minimalist HTML Reports**: Generates a sleek, auto-opening HTML report with a clean table view powered by the Inter font.
+- **🔄 Smart Redirect & Domain Handling**: Follows server redirects and automatically matches root domains to avoid breaking on subdomains like `www.`.
+- **🛡️ Bot-Protection Awareness**: Detects and flags non-200 HTTP responses (e.g., 403 Forbidden or 429 Too Many Requests) with color-coded terminal alerts.
 
 ## Requirements
 
-- Python 3.6+
-- `requests`
+- Python 3.8+
+- `aiohttp`
 - `beautifulsoup4`
+- `lxml`
 
 ## Installation
 
-Clone the repository and install the required dependencies:
+Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/niktoimiyazap/site-crawler.git
-cd site-crawler
+git clone https://github.com/niktoimiyazap/ui-component-extractor.git
+cd ui-component-extractor
 pip install -r requirements.txt
 ```
 
 ## Usage
 
-Run the script from your terminal by providing the starting URL:
+Simply run the script. It operates in an interactive mode:
 
 ```bash
-python crawler.py example.com
+python3 crawler.py
 ```
 
-You can optionally specify the maximum number of URLs to crawl using the `-m` or `--max-urls` flag (default is 50):
+1. **Enter the URL**: e.g., `example.com` or `https://example.com`
+2. **Set a limit**: Enter the maximum number of links to discover, or press `Enter` to crawl infinitely.
 
-```bash
-python crawler.py https://example.com -m 100
-```
+The crawler will output its progress in real-time with color-coded terminal messages. Once completed (or upon pressing `Ctrl+C`), it will automatically compile the extracted data and open `report.html` in your default web browser.
 
-## Example Output
-
-```text
-[*] Starting crawl for: https://example.com
-[*] Maximum URLs to discover: 50
-
-[*] Crawling: https://example.com
-[*] Crawling: https://example.com/about
-[*] Crawling: https://example.com/contact
-
-[+] Total unique internal links found: 3
-========================================
-https://example.com
-https://example.com/about
-https://example.com/contact
-========================================
-```
+## Example Report
+The generated `report.html` provides a scrollable, modern interface where you can view:
+- The URL
+- The extracted UI text
+- Tooltip metadata
+- **Component HTML**: The raw, copy-pasteable HTML of the UI element and its inline classes/styles.
 
 ## Disclaimer
 
-This tool is intended for educational purposes and personal use. Please respect website policies and `robots.txt` when crawling.
+This tool is strictly intended for educational purposes, personal UI inspiration, and structural analysis. Please respect `robots.txt` and the terms of service of the websites you crawl.
