@@ -35,11 +35,6 @@ def generate_html_report(domain_name, collected_data, mode):
         .download-btn svg { width: 14px; height: 14px; fill: currentColor; }
         
         #sandbox-iframe { width: 100%; min-height: 400px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; margin-top: 16px; }
-        
-        .og-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
-        .download-img-btn { background: transparent; color: #6366f1; border: 1px solid #c7d2fe; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; }
-        .download-img-btn:hover { background: #e0e7ff; border-color: #a5b4fc; }
-        .download-img-btn svg { width: 12px; height: 12px; fill: currentColor; }
     </style>
         """
         extra_body = """
@@ -117,7 +112,13 @@ def generate_html_report(domain_name, collected_data, mode):
         tr:hover {{ background: #f9fafb; }}
         a {{ color: #2563eb; text-decoration: none; }}
         a:hover {{ text-decoration: underline; }}
-        img.og-preview {{ max-width: 150px; border-radius: 4px; border: 1px solid #e5e7eb; }}
+        
+        /* Media & SEO Styles */
+        .og-wrapper {{ display: flex; flex-direction: column; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; flex-shrink: 0; }}
+        .og-preview {{ max-width: 120px; max-height: 120px; object-fit: contain; border-radius: 4px; }}
+        .download-img-btn {{ background: #fff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; width: 100%; justify-content: center; box-sizing: border-box; }}
+        .download-img-btn:hover {{ background: #e0e7ff; border-color: #a5b4fc; text-decoration: none !important; }}
+        .download-img-btn svg {{ width: 14px; height: 14px; fill: currentColor; }}
     </style>{extra_head}
 </head>
 <body>
