@@ -78,17 +78,19 @@ def parse_page_data(mode, soup, actual_url, collected_data):
                     print(f"\033[92m[+] Discovered UI Element: {href}\033[0m")
                     
     elif mode == MODE_AUDIO:
-        audio_tags = soup.find_all(["audio", "source", "a"])
+        audio_tags = soup.find_all(["audio", "video", "source", "a", "iframe"])
         for tag in audio_tags:
             src = tag.attrs.get("src") or tag.attrs.get("href")
             if not src: continue
             
             is_audio = False
-            if tag.name == "audio":
+            if tag.name in ("audio", "video"):
                 is_audio = True
-            elif tag.name == "source" and "audio" in tag.attrs.get("type", ""):
+            elif tag.name == "source" and ("audio" in tag.attrs.get("type", "") or "video" in tag.attrs.get("type", "")):
                 is_audio = True
-            elif src.lower().endswith(AUDIO_EXTENSIONS):
+            elif src.lower().endswith(AUDIO_EXTENSIONS) or ".m3u8" in src.lower():
+                is_audio = True
+            elif tag.name == "iframe" and ("player" in src.lower() or "embed" in src.lower()):
                 is_audio = True
                 
             if is_audio:
@@ -96,7 +98,7 @@ def parse_page_data(mode, soup, actual_url, collected_data):
                 if full_src not in collected_data:
                     context = tag.parent.get_text(strip=True)[:100] if tag.parent else ""
                     collected_data[full_src] = {'url': full_src, 'type': tag.name, 'context': context}
-                    print(f"\033[92m[+] Discovered Audio: {full_src}\033[0m")
+                    print(f"\033[92m[+] Discovered Media Stream: {full_src}\033[0m")
                     
     elif mode == MODE_SEO:
         if actual_url not in collected_data:
