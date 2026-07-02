@@ -80,13 +80,27 @@ def crawl(start_url, max_urls=50):
     print("=" * 40)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="A simple web crawler to map out internal links of a website.")
-    parser.add_argument("url", help="The starting URL to crawl (e.g., example.com or https://example.com)")
-    parser.add_argument("-m", "--max-urls", help="Maximum number of URLs to crawl (default: 50)", type=int, default=50)
-    args = parser.parse_args()
+    print("=== Добро пожаловать в Site Crawler ===")
+    start_url = input("Введите ссылку для парсинга (например, example.com): ").strip()
     
-    start_url = args.url
+    if not start_url:
+        print("Ошибка: Ссылка не может быть пустой.")
+        sys.exit(1)
+        
     if not start_url.startswith("http://") and not start_url.startswith("https://"):
         start_url = "https://" + start_url
         
-    crawl(start_url, max_urls=args.max_urls)
+    max_urls_input = input("Сколько ссылок парсить? (Оставьте пустым для 'бесконечного' парсинга, или введите число): ").strip()
+    
+    if max_urls_input.isdigit():
+        max_urls = int(max_urls_input)
+    else:
+        # If left empty, set a practically infinite limit (1 million)
+        max_urls = 1000000
+        
+    try:
+        crawl(start_url, max_urls=max_urls)
+    except KeyboardInterrupt:
+        print("\n[!] Парсинг остановлен пользователем.")
+        sys.exit(0)
+
