@@ -19,10 +19,10 @@ OmniCrawl is an incredibly fast, multi-mode web scraper built with `aiohttp` and
 - **Blazing Fast**: Asynchronous I/O using `aiohttp` and a bounded semaphore allows fetching 100s of pages concurrently.
 - **Cross-Domain Wandering**: Toggle between strict domain locking and infinite cross-domain web wandering.
 - **Four Specialized Modes**:
-  - **1) Classic Links**: Extracts all internal URLs, link text, and tooltips.
-  - **2) UI Component Extractor**: Rips raw HTML components (buttons, navbars, cards) and their associated CSS styles. Preview them instantly in the interactive Sandbox Modal or download them directly to `.html` files.
-  - **3) Audio & Stream Hunter**: Locates `<audio>`, `<source>`, `.mp3`, and `.m3u8` stream links hidden across a site.
-  - **4) SEO & Meta Auditor**: Generates a clean audit of Titles, Meta Descriptions, and OpenGraph images.
+  - **1) General Links & Navigation**: Extracts all internal URLs, link text, and tooltips.
+  - **2) UI Elements & Components**: Rips raw HTML components (buttons, navbars, cards) and their associated CSS styles. Preview them instantly in the interactive Sandbox Modal or download them directly to `.html` files.
+  - **3) Audio & Video Streams**: Locates `<audio>`, `<video>`, `.mp3`, and `.m3u8` stream links hidden across a site.
+  - **4) Metadata & Media**: Generates a clean audit of Titles, Meta Descriptions, and extracts all visual media including OpenGraph images, GIFs, PNGs, and HTML5 Video animations.
 - **Beautiful HTML Reports**: Output is compiled into an elegant, styled HTML table.
 
 ## 📦 Installation

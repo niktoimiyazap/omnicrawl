@@ -103,13 +103,36 @@ def parse_page_data(mode, soup, actual_url, collected_data):
             title = soup.title.string.strip() if soup.title and soup.title.string else ""
             desc_tag = soup.find("meta", attrs={"name": "description"})
             desc = desc_tag.attrs.get("content", "").strip() if desc_tag else ""
+            
+            media_assets = []
             og_image_tag = soup.find("meta", attrs={"property": "og:image"})
-            og_image = og_image_tag.attrs.get("content", "").strip() if og_image_tag else ""
+            if og_image_tag and og_image_tag.attrs.get("content"):
+                media_assets.append(urljoin(actual_url, og_image_tag.attrs.get("content").strip()))
+                
+            for img in soup.find_all("img"):
+                src = img.attrs.get("src") or img.attrs.get("data-src")
+                if src:
+                    full_src = urljoin(actual_url, src.strip())
+                    if full_src not in media_assets:
+                        media_assets.append(full_src)
+                        
+            for video in soup.find_all("video"):
+                src = video.attrs.get("src")
+                if src:
+                    full_src = urljoin(actual_url, src.strip())
+                    if full_src not in media_assets:
+                        media_assets.append(full_src)
+                for source in video.find_all("source"):
+                    src = source.attrs.get("src")
+                    if src:
+                        full_src = urljoin(actual_url, src.strip())
+                        if full_src not in media_assets:
+                            media_assets.append(full_src)
             
             collected_data[actual_url] = {
                 'url': actual_url,
                 'title': title,
                 'description': desc,
-                'og_image': og_image
+                'media': media_assets
             }
             print(f"\033[92m[+] Audited Page: {actual_url}\033[0m")

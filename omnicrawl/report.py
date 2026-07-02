@@ -163,20 +163,30 @@ def generate_html_report(domain_name, collected_data, mode):
                 <td>{info['context']}</td>\n"""
         elif mode == MODE_SEO:
             dl_icon = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>'
-            if info["og_image"]:
-                img_tag = f"""<div class="og-wrapper">
-                    <img src="{info['og_image']}" class="og-preview">
-                    <a href="{info['og_image']}" target="_blank" download class="download-img-btn">{dl_icon} Download</a>
-                </div>"""
+            media_html = ""
+            if info.get("media"):
+                media_html = '<div style="display: flex; gap: 8px; flex-wrap: wrap; max-height: 200px; overflow-y: auto; padding: 4px;">'
+                for m_url in info["media"]:
+                    # simple heuristic for video vs image
+                    if m_url.lower().endswith(('.mp4', '.webm', '.ogg', '.m3u8')):
+                        preview = f'<video src="{m_url}" class="og-preview" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>'
+                    else:
+                        preview = f'<img src="{m_url}" class="og-preview">'
+                    media_html += f"""
+                    <div class="og-wrapper">
+                        {preview}
+                        <a href="{m_url}" target="_blank" download class="download-img-btn">{dl_icon} Download</a>
+                    </div>"""
+                media_html += '</div>'
             else:
-                img_tag = "<span style='color: #94a3b8; font-size: 12px;'>No Image</span>"
+                media_html = "<span style='color: #94a3b8; font-size: 12px;'>No Media</span>"
                 
             html_content += f"""                <td><a href="{info['url']}" target="_blank" style="word-break: break-all;">{info['url']}</a></td>
                 <td>
                     <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px; font-size: 14px;">{info['title'] or 'No Title'}</div>
                     <div style="color: #475569; font-size: 13px; line-height: 1.4;">{info['description'] or 'No Description'}</div>
                 </td>
-                <td>{img_tag}</td>\n"""
+                <td>{media_html}</td>\n"""
         html_content += "            </tr>\n"
 
     html_content += f"""        </tbody>

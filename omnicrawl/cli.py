@@ -12,10 +12,10 @@ def run_cli():
                                                 v1.0.0
     """)
     print("Select an extraction mode:")
-    print("  1) Classic Links (URL, Text, Tooltips)")
-    print("  2) UI Components (HTML Snippets + Interactive Sandbox)")
-    print("  3) Audio & Stream Hunter (.mp3, .m3u8, <audio> tags)")
-    print("  4) SEO & Meta Auditor (Titles, Descriptions, OpenGraph Images)")
+    print("  1) General Links & Navigation (URLs, Text, Tooltips)")
+    print("  2) UI Elements & Components (HTML/CSS Snippets + Sandbox)")
+    print("  3) Audio & Video Streams (.mp3, .m3u8, <audio>, <video>)")
+    print("  4) Metadata & Media (SEO, Images, GIFs, Animations)")
     
     while True:
         mode_input = input("\nEnter mode (1-4): ").strip()
