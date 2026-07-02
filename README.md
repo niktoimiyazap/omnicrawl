@@ -1,32 +1,31 @@
-# OmniCrawl
+<h1 align="center">
+  OmniCrawl
+</h1>
 
-A universal, high-performance asynchronous web extraction framework for structural analysis, UI component isolation, and SEO auditing. Built with `asyncio`, `aiohttp`, and `BeautifulSoup4`.
+<p align="center">
+  <strong>A Universal, High-Performance Asynchronous Web Extraction Framework</strong>
+</p>
 
-## Features (4 Distinct Modes)
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python Version">
+  <img src="https://img.shields.io/badge/asyncio-enabled-success.svg" alt="Asyncio">
+  <img src="https://img.shields.io/badge/release-v1.0.0-green.svg" alt="Release">
+</p>
 
-When you run the crawler, you can choose from 4 specialized data extraction engines:
+OmniCrawl is an incredibly fast, multi-mode web scraper built with `aiohttp` and `asyncio`. It crawls deep into websites to extract everything from basic links and SEO meta tags to raw UI components (complete with CSS) and media files.
 
-1. **Classic Links Mapper**: Extracts basic internal links alongside their UI text and tooltips (`title`/`aria-label`).
-2. **UI Component Extractor (with Sandbox)**: Steals styling! Grabs the raw HTML snippet and inline CSS/classes of UI components. The generated report includes **syntax highlighting** and a **▶️ Sandbox button** that lets you visually preview the extracted component directly in your browser.
-3. **Audio & Stream Hunter**: Scans the website strictly for audio assets (`.mp3`, `.wav`, `.m3u8` streams, `<audio>`, `<source>`). Great for ripping media.
-4. **SEO & Meta Auditor**: Instead of extracting links, it pulls the `<title>`, `<meta description>`, and OpenGraph (`og:image`) tags from every page it crawls, generating a full SEO health audit.
+## 🚀 Features
 
-### Core Architecture
-- **🚀 Asynchronous Turbo Crawling**: Utilizes `aiohttp` and `lxml` to process dozens of pages concurrently, offering massive speed improvements over synchronous scrapers.
-- **📊 Minimalist HTML Reports**: Generates a sleek, auto-opening HTML report with a clean table view powered by the Inter font.
-- **🔄 Smart Redirect & Domain Handling**: Follows server redirects and automatically matches root domains to avoid breaking on subdomains like `www.`.
-- **🛡️ Bot-Protection Awareness**: Detects and flags non-200 HTTP responses (e.g., 403 Forbidden or 429 Too Many Requests) with color-coded terminal alerts.
+- **Blazing Fast**: Asynchronous I/O using `aiohttp` and a bounded semaphore allows fetching 100s of pages concurrently.
+- **Cross-Domain Wandering**: Toggle between strict domain locking and infinite cross-domain web wandering.
+- **Four Specialized Modes**:
+  - **1) Classic Links**: Extracts all internal URLs, link text, and tooltips.
+  - **2) UI Component Extractor**: Rips raw HTML components (buttons, navbars, cards) and their associated CSS styles. Preview them instantly in the interactive Sandbox Modal or download them directly to `.html` files.
+  - **3) Audio & Stream Hunter**: Locates `<audio>`, `<source>`, `.mp3`, and `.m3u8` stream links hidden across a site.
+  - **4) SEO & Meta Auditor**: Generates a clean audit of Titles, Meta Descriptions, and OpenGraph images.
+- **Beautiful HTML Reports**: Output is compiled into an elegant, styled HTML table.
 
-## Requirements
-
-- Python 3.8+
-- `aiohttp`
-- `beautifulsoup4`
-- `lxml`
-
-## Installation
-
-Clone the repository and install the dependencies:
+## 📦 Installation
 
 ```bash
 git clone https://github.com/niktoimiyazap/omnicrawl.git
@@ -34,26 +33,28 @@ cd omnicrawl
 pip install -r requirements.txt
 ```
 
-## Usage
+*(Ensure you have Python 3.10+ installed)*
 
-Simply run the script. It operates in an interactive mode:
+## 🛠️ Usage
+
+Simply run the CLI and follow the interactive prompts:
 
 ```bash
 python3 main.py
 ```
 
-1. **Enter the URL**: e.g., `example.com` or `https://example.com`
-2. **Set a limit**: Enter the maximum number of links to discover, or press `Enter` to crawl infinitely.
+### The UI Component Sandbox
+When using Mode 2 (UI Component Extractor), the generated `report.html` includes a **Sandbox** button for every discovered element. 
+Clicking it opens an isolated `<iframe>` containing the original HTML and all the CSS styles from the source page. You can also click **Download HTML** to get a ready-to-use `.html` file of the stolen component.
 
-The crawler will output its progress in real-time with color-coded terminal messages. Once completed (or upon pressing `Ctrl+C`), it will automatically compile the extracted data and open `report.html` in your default web browser.
+## 🧪 Testing
 
-## Example Report
-The generated `report.html` provides a scrollable, modern interface where you can view:
-- The URL
-- The extracted UI text
-- Tooltip metadata
-- **Component HTML**: The raw, copy-pasteable HTML of the UI element and its inline classes/styles.
+OmniCrawl includes a test suite for its parser logic. Run it via:
 
-## Disclaimer
+```bash
+python3 -m unittest discover tests
+```
 
-This tool is strictly intended for educational purposes, personal UI inspiration, and structural analysis. Please respect `robots.txt` and the terms of service of the websites you crawl.
+## 📜 License
+
+MIT License. Feel free to use, modify, and distribute.
