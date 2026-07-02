@@ -24,7 +24,7 @@ async def get_all_website_links(session, url, domain_name):
             html = await response.text()
             soup = BeautifulSoup(html, "lxml")
     except Exception as e:
-        print(f"[-] Ошибка доступа {url}: {e}", file=sys.stderr)
+        print(f"[-] Error accessing {url}: {e}", file=sys.stderr)
         return {}
 
     for a_tag in soup.find_all("a"):
@@ -32,20 +32,20 @@ async def get_all_website_links(session, url, domain_name):
         if not href:
             continue
         
-        # Получаем текст ссылки (кнопки)
+        # Get text from the link
         link_text = a_tag.get_text(strip=True)
         if not link_text:
-            # Попробуем достать alt из картинок внутри ссылки
+            # Fallback to image alt text if available
             img = a_tag.find("img")
             if img and img.attrs.get("alt"):
                 link_text = img.attrs.get("alt").strip()
                 
-        # Получаем тултип (title или aria-label)
+        # Get tooltip (title or aria-label)
         tooltip = a_tag.attrs.get("title", "").strip()
         if not tooltip:
             tooltip = a_tag.attrs.get("aria-label", "").strip()
             
-        # Убираем переносы строк в тексте для красоты вывода
+        # Clean up line breaks for output
         link_text = " ".join(link_text.split())
         tooltip = " ".join(tooltip.split())
         
@@ -63,7 +63,7 @@ async def get_all_website_links(session, url, domain_name):
         if domain_name not in href:
             continue
             
-        # Записываем информацию (если ссылка уже есть, оставляем первую найденную мета-инфу)
+        # Save link metadata (keep the first occurrence)
         if href not in urls_info:
             urls_info[href] = {
                 'text': link_text,
@@ -74,12 +74,11 @@ async def get_all_website_links(session, url, domain_name):
 
 async def crawl(start_url, max_urls):
     """Crawls a website asynchronously."""
-    print(f"[*] Старт турбо-парсинга: {start_url}")
-    print(f"[*] Максимум ссылок: {max_urls}\n")
+    print(f"[*] Starting crawl for: {start_url}")
+    print(f"[*] Maximum URLs to discover: {max_urls}\n")
     
     domain_name = urlparse(start_url).netloc
     
-    # Храним информацию о ссылках
     visited = {start_url: {'text': 'Root URL', 'tooltip': ''}}
     to_visit = {start_url}
     
@@ -104,34 +103,34 @@ async def crawl(start_url, max_urls):
                             visited[link] = info
                             to_visit.add(link)
                             
-                            # Формируем красивый вывод
-                            text_out = f" | Текст: '{info['text']}'" if info['text'] else ""
-                            tooltip_out = f" | Тултип: '{info['tooltip']}'" if info['tooltip'] else ""
-                            print(f"[*] Найдено ({len(visited)}): {link}{text_out}{tooltip_out}")
+                            # Format the output log
+                            text_out = f" | Text: '{info['text']}'" if info['text'] else ""
+                            tooltip_out = f" | Tooltip: '{info['tooltip']}'" if info['tooltip'] else ""
+                            print(f"[*] Discovered ({len(visited)}): {link}{text_out}{tooltip_out}")
                             
                             if len(visited) >= max_urls:
                                 break
 
-    print(f"\n[+] Всего уникальных внутренних ссылок найдено: {len(visited)}")
+    print(f"\n[+] Total unique internal links found: {len(visited)}")
     print("=" * 100)
     for url, info in sorted(visited.items()):
-        text_out = f" | Текст: '{info['text']}'" if info['text'] else ""
-        tooltip_out = f" | Тултип: '{info['tooltip']}'" if info['tooltip'] else ""
+        text_out = f" | Text: '{info['text']}'" if info['text'] else ""
+        tooltip_out = f" | Tooltip: '{info['tooltip']}'" if info['tooltip'] else ""
         print(f"{url}{text_out}{tooltip_out}")
     print("=" * 100)
 
 def main():
-    print("=== Добро пожаловать в Site Crawler (ASYNC TURBO + UI METADATA) ===")
-    start_url = input("Введите ссылку для парсинга (например, example.com): ").strip()
+    print("=== Site Crawler ===")
+    start_url = input("Enter the URL to crawl (e.g., example.com): ").strip()
     
     if not start_url:
-        print("Ошибка: Ссылка не может быть пустой.")
+        print("Error: URL cannot be empty.")
         sys.exit(1)
         
     if not start_url.startswith("http://") and not start_url.startswith("https://"):
         start_url = "https://" + start_url
         
-    max_urls_input = input("Сколько ссылок парсить? (Оставьте пустым для 'бесконечного' парсинга, или введите число): ").strip()
+    max_urls_input = input("Enter the maximum number of links to discover (leave empty for infinite): ").strip()
     
     if max_urls_input.isdigit():
         max_urls = int(max_urls_input)
@@ -143,7 +142,7 @@ def main():
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         asyncio.run(crawl(start_url, max_urls=max_urls))
     except KeyboardInterrupt:
-        print("\n[!] Парсинг остановлен пользователем.")
+        print("\n[!] Crawl interrupted by user.")
         sys.exit(0)
 
 if __name__ == "__main__":
