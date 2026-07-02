@@ -21,11 +21,14 @@ def extract_internal_links(soup, actual_url, domain_name):
 def parse_page_data(mode, soup, actual_url, collected_data):
     """Extracts data based on the chosen mode and adds it to collected_data."""
     if mode in (MODE_CLASSIC, MODE_UI_COMPONENTS):
-        page_styles = ""
+        page_styles = f'<base href="{actual_url}">'
         if mode == MODE_UI_COMPONENTS:
             for tag in soup.find_all(['style', 'link']):
                 if tag.name == 'link' and tag.get('rel') != ['stylesheet']:
                     continue
+                # Ensure link href is absolute just in case base tag fails
+                if tag.name == 'link' and tag.get('href'):
+                    tag['href'] = urljoin(actual_url, tag['href'])
                 page_styles += str(tag) + "\n"
                 
         for a_tag in soup.find_all("a"):
