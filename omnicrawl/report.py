@@ -142,8 +142,9 @@ def generate_html_report(domain_name, collected_data, mode):
                 <td>{info['text']}</td>
                 <td>{info['tooltip']}</td>\n"""
         elif mode == MODE_UI_COMPONENTS:
-            raw_html_js = json.dumps(info['raw_html'])
-            page_styles_js = json.dumps(info.get('page_styles', ''))
+            import html
+            raw_html_js = html.escape(json.dumps(info['raw_html']))
+            page_styles_js = html.escape(json.dumps(info.get('page_styles', '')))
             play_icon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
             dl_icon = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>'
             filename = f"component_{abs(hash(info['url']))}.html"
@@ -152,8 +153,8 @@ def generate_html_report(domain_name, collected_data, mode):
                 <td>{info['text']}</td>
                 <td>
                     <div class="action-group">
-                        <button class="sandbox-btn" onclick='openSandbox({raw_html_js}, {page_styles_js})'>{play_icon} Sandbox</button>
-                        <button class="download-btn" onclick='downloadComponent({raw_html_js}, {page_styles_js}, "{filename}")'>{dl_icon} Download HTML</button>
+                        <button class="sandbox-btn" onclick="openSandbox({raw_html_js}, {page_styles_js})">{play_icon} Sandbox</button>
+                        <button class="download-btn" onclick="downloadComponent({raw_html_js}, {page_styles_js}, '{filename}')">{dl_icon} Download HTML</button>
                     </div>
                 </td>\n"""
         elif mode == MODE_AUDIO:
