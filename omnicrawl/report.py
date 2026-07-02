@@ -35,6 +35,11 @@ def generate_html_report(domain_name, collected_data, mode):
         .download-btn svg { width: 14px; height: 14px; fill: currentColor; }
         
         #sandbox-iframe { width: 100%; min-height: 400px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; margin-top: 16px; }
+        
+        .og-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+        .download-img-btn { background: transparent; color: #6366f1; border: 1px solid #c7d2fe; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; }
+        .download-img-btn:hover { background: #e0e7ff; border-color: #a5b4fc; }
+        .download-img-btn svg { width: 12px; height: 12px; fill: currentColor; }
     </style>
         """
         extra_body = """
@@ -92,7 +97,7 @@ def generate_html_report(domain_name, collected_data, mode):
         headers = ["Media URL", "Element Type", "Context / Text"]
     elif mode == MODE_SEO:
         mode_name = "SEO & Meta Auditor"
-        headers = ["Page URL", "Title", "Meta Description", "OG Image"]
+        headers = ["Page URL", "Title & Description", "OG Image"]
 
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -156,10 +161,20 @@ def generate_html_report(domain_name, collected_data, mode):
                 <td><span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">{info['type']}</span></td>
                 <td>{info['context']}</td>\n"""
         elif mode == MODE_SEO:
-            img_tag = f'<img src="{info["og_image"]}" class="og-preview">' if info["og_image"] else "No Image"
-            html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
-                <td><strong>{info['title']}</strong></td>
-                <td>{info['description']}</td>
+            dl_icon = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>'
+            if info["og_image"]:
+                img_tag = f"""<div class="og-wrapper">
+                    <img src="{info['og_image']}" class="og-preview">
+                    <a href="{info['og_image']}" target="_blank" download class="download-img-btn">{dl_icon} Download</a>
+                </div>"""
+            else:
+                img_tag = "<span style='color: #94a3b8; font-size: 12px;'>No Image</span>"
+                
+            html_content += f"""                <td><a href="{info['url']}" target="_blank" style="word-break: break-all;">{info['url']}</a></td>
+                <td>
+                    <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px; font-size: 14px;">{info['title'] or 'No Title'}</div>
+                    <div style="color: #475569; font-size: 13px; line-height: 1.4;">{info['description'] or 'No Description'}</div>
+                </td>
                 <td>{img_tag}</td>\n"""
         html_content += "            </tr>\n"
 
