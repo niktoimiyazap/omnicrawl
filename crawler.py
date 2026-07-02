@@ -3,6 +3,8 @@ import aiohttp
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 import sys
+import os
+import webbrowser
 
 def is_valid_url(url):
     """Check if the URL is valid."""
@@ -25,7 +27,7 @@ async def get_all_website_links(session, url, domain_name):
             html = await response.text()
             soup = BeautifulSoup(html, "lxml")
     except Exception as e:
-        print(f"[-] Error accessing {url}: {e}", file=sys.stderr)
+        print(f"\033[91m[-] Error accessing {url}: {e}\033[0m", file=sys.stderr)
         return {}
 
     for a_tag in soup.find_all("a"):
@@ -113,19 +115,64 @@ async def crawl(start_url, max_urls):
                                 break
 
     print(f"\n[+] Total unique internal links found: {len(visited)}")
-    print("=" * 100)
+    
+    # Generate HTML report
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crawler Report - {domain_name}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {{ font-family: 'Inter', sans-serif; background: #f9fafb; color: #111827; padding: 2rem; margin: 0; }}
+        h1 {{ font-size: 1.5rem; margin-bottom: 1rem; font-weight: 600; }}
+        table {{ width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }}
+        th, td {{ padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 0.875rem; }}
+        th {{ background: #f3f4f6; font-weight: 600; color: #374151; }}
+        tr:last-child td {{ border-bottom: none; }}
+        tr:hover {{ background: #f9fafb; }}
+        a {{ color: #2563eb; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
+    </style>
+</head>
+<body>
+    <h1>Crawler Report: {domain_name} ({len(visited)} links)</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Link Text</th>
+                <th>Tooltip</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
     for url, info in sorted(visited.items()):
-        text_out = f" | Text: '{info['text']}'" if info['text'] else ""
-        tooltip_out = f" | Tooltip: '{info['tooltip']}'" if info['tooltip'] else ""
-        print(f"{url}{text_out}{tooltip_out}")
-    print("=" * 100)
+        html_content += f"""            <tr>
+                <td><a href="{url}" target="_blank">{url}</a></td>
+                <td>{info['text']}</td>
+                <td>{info['tooltip']}</td>
+            </tr>\n"""
+            
+    html_content += """        </tbody>
+    </table>
+</body>
+</html>"""
+
+    report_path = os.path.abspath("report.html")
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+        
+    print(f"[*] Report saved to {report_path}")
+    webbrowser.open(f"file://{report_path}")
 
 def main():
     print("=== Site Crawler ===")
     start_url = input("Enter the URL to crawl (e.g., example.com): ").strip()
     
     if not start_url:
-        print("Error: URL cannot be empty.")
+        print("\033[91mError: URL cannot be empty.\033[0m")
         sys.exit(1)
         
     if not start_url.startswith("http://") and not start_url.startswith("https://"):
@@ -143,7 +190,7 @@ def main():
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         asyncio.run(crawl(start_url, max_urls=max_urls))
     except KeyboardInterrupt:
-        print("\n[!] Crawl interrupted by user.")
+        print("\n\033[91m[!] Crawl interrupted by user.\033[0m")
         sys.exit(0)
 
 if __name__ == "__main__":
