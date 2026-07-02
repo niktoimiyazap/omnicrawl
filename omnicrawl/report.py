@@ -23,13 +23,14 @@ def generate_html_report(domain_name, collected_data, mode):
     <script>document.addEventListener('DOMContentLoaded', (event) => { document.querySelectorAll('pre code').forEach((el) => { hljs.highlightElement(el); }); });</script>
     <style>
         /* Sandbox Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
-        .sandbox-btn { background: #10b981; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
-        .sandbox-btn:hover { background: #059669; }
-        #sandbox-container { border: 1px dashed #cbd5e1; padding: 20px; min-height: 100px; margin-top: 15px; border-radius: 4px; background: #fff; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+        .modal-content { background-color: #ffffff; margin: 5% auto; padding: 24px; border: 1px solid #e2e8f0; width: 85%; max-width: 1200px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+        .close { color: #94a3b8; float: right; font-size: 24px; font-weight: bold; cursor: pointer; transition: color 0.2s; line-height: 1; }
+        .close:hover, .close:focus { color: #0f172a; text-decoration: none; cursor: pointer; }
+        .sandbox-btn { background: transparent; color: #3b82f6; border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .sandbox-btn:hover { background: #eff6ff; border-color: #93c5fd; }
+        .sandbox-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        #sandbox-iframe { width: 100%; min-height: 400px; border: 1px dashed #cbd5e1; border-radius: 6px; background: #fff; margin-top: 16px; }
     </style>
         """
         extra_body = """
@@ -37,31 +38,34 @@ def generate_html_report(domain_name, collected_data, mode):
     <div id="sandboxModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>UI Sandbox Preview</h2>
-        <p style="color: #64748b; font-size: 14px; margin-top: 0;">Below is how the component renders visually in the browser.</p>
-        <div id="sandbox-container"></div>
+        <h2 style="margin-top:0; color: #0f172a;">UI Sandbox Preview</h2>
+        <p style="color: #64748b; font-size: 14px; margin-top: -10px;">The component is rendered in an isolated iframe with its original CSS styles attached.</p>
+        <iframe id="sandbox-iframe" src="about:blank"></iframe>
       </div>
     </div>
     
     <script>
         var modal = document.getElementById("sandboxModal");
         var span = document.getElementsByClassName("close")[0];
-        var container = document.getElementById("sandbox-container");
+        var iframe = document.getElementById("sandbox-iframe");
         
-        function openSandbox(rawHtml) {
-            container.innerHTML = rawHtml;
+        function openSandbox(rawHtml, pageStyles) {
+            var doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write('<!DOCTYPE html><html><head>' + (pageStyles || '') + '</head><body style="padding: 20px; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">' + rawHtml + '</body></html>');
+            doc.close();
             modal.style.display = "block";
         }
         
         span.onclick = function() {
             modal.style.display = "none";
-            container.innerHTML = "";
+            iframe.src = "about:blank";
         }
         
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
-                container.innerHTML = "";
+                iframe.src = "about:blank";
             }
         }
     </script>
@@ -118,10 +122,12 @@ def generate_html_report(domain_name, collected_data, mode):
                 <td>{info['tooltip']}</td>\n"""
         elif mode == MODE_UI_COMPONENTS:
             raw_html_js = json.dumps(info['raw_html'])
+            page_styles_js = json.dumps(info.get('page_styles', ''))
+            play_icon = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
             html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
                 <td>{info['text']}</td>
                 <td><pre><code class="language-html">{info['html']}</code></pre></td>
-                <td><button class="sandbox-btn" onclick='openSandbox({raw_html_js})'>▶️ Sandbox</button></td>\n"""
+                <td><button class="sandbox-btn" onclick='openSandbox({raw_html_js}, {page_styles_js})'>{play_icon} Sandbox</button></td>\n"""
         elif mode == MODE_AUDIO:
             html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
                 <td><span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">{info['type']}</span></td>

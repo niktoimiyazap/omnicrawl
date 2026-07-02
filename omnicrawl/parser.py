@@ -21,6 +21,13 @@ def extract_internal_links(soup, actual_url, domain_name):
 def parse_page_data(mode, soup, actual_url, collected_data):
     """Extracts data based on the chosen mode and adds it to collected_data."""
     if mode in (MODE_CLASSIC, MODE_UI_COMPONENTS):
+        page_styles = ""
+        if mode == MODE_UI_COMPONENTS:
+            for tag in soup.find_all(['style', 'link']):
+                if tag.name == 'link' and tag.get('rel') != ['stylesheet']:
+                    continue
+                page_styles += str(tag) + "\n"
+                
         for a_tag in soup.find_all("a"):
             href = a_tag.attrs.get("href")
             if not href: continue
@@ -50,8 +57,8 @@ def parse_page_data(mode, soup, actual_url, collected_data):
                     if len(parent_html) > 1500: 
                         parent_html = str(a_tag)
                     info['html'] = html.escape(parent_html)
-                    # For sandbox, also store unescaped raw HTML (or we unescape in JS)
                     info['raw_html'] = parent_html
+                    info['page_styles'] = page_styles
                     
                 collected_data[href] = info
                 if mode == MODE_CLASSIC:
