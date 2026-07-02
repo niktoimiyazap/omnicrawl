@@ -110,21 +110,21 @@ def generate_html_report(domain_name, collected_data, mode):
         th {{ background: #f3f4f6; font-weight: 600; color: #374151; }}
         tr:last-child td {{ border-bottom: none; }}
         tr:hover {{ background: #f9fafb; }}
-        a {{ color: #2563eb; text-decoration: none; }}
-        a:hover {{ text-decoration: underline; }}
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
         
         /* Media & SEO Styles */
-        .og-wrapper {{ display: flex; flex-direction: column; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; flex-shrink: 0; }}
-        .og-preview {{ max-width: 120px; max-height: 120px; object-fit: contain; border-radius: 4px; }}
-        .download-img-btn {{ background: #fff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; width: 100%; justify-content: center; box-sizing: border-box; }}
-        .download-img-btn:hover {{ background: #e0e7ff; border-color: #a5b4fc; text-decoration: none !important; }}
-        .download-img-btn svg {{ width: 14px; height: 14px; fill: currentColor; }}
+        .og-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; flex-shrink: 0; content-visibility: auto; contain-intrinsic-size: 150px; }
+        .og-preview { max-width: 120px; max-height: 120px; object-fit: contain; border-radius: 4px; }
+        .download-img-btn { background: #fff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; width: 100%; justify-content: center; box-sizing: border-box; }
+        .download-img-btn:hover { background: #e0e7ff; border-color: #a5b4fc; text-decoration: none !important; }
+        .download-img-btn svg { width: 14px; height: 14px; fill: currentColor; }
     </style>{extra_head}
 </head>
 <body>
     <h1>OmniCrawl Report: {domain_name}</h1>
     <h2>Mode: {mode_name} | Total Items: {len(collected_data)}</h2>
-    <table>
+    <table style="table-layout: fixed; width: 100%;">
         <thead>
             <tr>
 """
@@ -137,11 +137,11 @@ def generate_html_report(domain_name, collected_data, mode):
 """
 
     for key, info in sorted(collected_data.items()):
-        html_content += "            <tr>\n"
+        html_content += '            <tr style="content-visibility: auto; contain-intrinsic-size: 100px;">\n'
         if mode == MODE_CLASSIC:
-            html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
-                <td>{info['text']}</td>
-                <td>{info['tooltip']}</td>\n"""
+            html_content += f"""                <td style="word-break: break-word;"><a href="{info['url']}" target="_blank">{info['url']}</a></td>
+                <td style="word-break: break-word;">{info['text']}</td>
+                <td style="word-break: break-word;">{info['tooltip']}</td>\n"""
         elif mode == MODE_UI_COMPONENTS:
             import html
             raw_html_js = html.escape(json.dumps(info['raw_html']))
@@ -150,8 +150,8 @@ def generate_html_report(domain_name, collected_data, mode):
             dl_icon = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>'
             filename = f"component_{abs(hash(info['url']))}.html"
             
-            html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
-                <td>{info['text']}</td>
+            html_content += f"""                <td style="word-break: break-word;"><a href="{info['url']}" target="_blank">{info['url']}</a></td>
+                <td style="word-break: break-word;">{info['text']}</td>
                 <td>
                     <div class="action-group">
                         <button class="sandbox-btn" onclick="openSandbox({raw_html_js}, {page_styles_js})">{play_icon} Sandbox</button>
@@ -159,9 +159,9 @@ def generate_html_report(domain_name, collected_data, mode):
                     </div>
                 </td>\n"""
         elif mode == MODE_AUDIO:
-            html_content += f"""                <td><a href="{info['url']}" target="_blank">{info['url']}</a></td>
-                <td><span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">{info['type']}</span></td>
-                <td>{info['context']}</td>\n"""
+            html_content += f"""                <td style="word-break: break-word;"><a href="{info['url']}" target="_blank">{info['url']}</a></td>
+                <td><span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; white-space: nowrap;">{info['type']}</span></td>
+                <td style="word-break: break-word;">{info['context']}</td>\n"""
         elif mode == MODE_SEO:
             dl_icon = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>'
             media_html = ""
@@ -170,9 +170,9 @@ def generate_html_report(domain_name, collected_data, mode):
                 for m_url in info["media"]:
                     # simple heuristic for video vs image
                     if m_url.lower().endswith(('.mp4', '.webm', '.ogg', '.m3u8')):
-                        preview = f'<video src="{m_url}" class="og-preview" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>'
+                        preview = f'<video src="{m_url}" class="og-preview" preload="none" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>'
                     else:
-                        preview = f'<img src="{m_url}" class="og-preview">'
+                        preview = f'<img src="{m_url}" class="og-preview" loading="lazy" decoding="async">'
                     media_html += f"""
                     <div class="og-wrapper">
                         {preview}
@@ -182,8 +182,8 @@ def generate_html_report(domain_name, collected_data, mode):
             else:
                 media_html = "<span style='color: #94a3b8; font-size: 12px;'>No Media</span>"
                 
-            html_content += f"""                <td><a href="{info['url']}" target="_blank" style="word-break: break-all;">{info['url']}</a></td>
-                <td>
+            html_content += f"""                <td style="word-break: break-all;"><a href="{info['url']}" target="_blank">{info['url']}</a></td>
+                <td style="word-break: break-word;">
                     <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px; font-size: 14px;">{info['title'] or 'No Title'}</div>
                     <div style="color: #475569; font-size: 13px; line-height: 1.4;">{info['description'] or 'No Description'}</div>
                 </td>
