@@ -110,15 +110,15 @@ def generate_html_report(domain_name, collected_data, mode):
         th {{ background: #f3f4f6; font-weight: 600; color: #374151; }}
         tr:last-child td {{ border-bottom: none; }}
         tr:hover {{ background: #f9fafb; }}
-        a { color: #2563eb; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        a {{ color: #2563eb; text-decoration: none; }}
+        a:hover {{ text-decoration: underline; }}
         
         /* Media & SEO Styles */
-        .og-wrapper { display: flex; flex-direction: column; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; flex-shrink: 0; content-visibility: auto; contain-intrinsic-size: 150px; }
-        .og-preview { max-width: 120px; max-height: 120px; object-fit: contain; border-radius: 4px; }
-        .download-img-btn { background: #fff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; width: 100%; justify-content: center; box-sizing: border-box; }
-        .download-img-btn:hover { background: #e0e7ff; border-color: #a5b4fc; text-decoration: none !important; }
-        .download-img-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .og-wrapper {{ display: flex; flex-direction: column; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; flex-shrink: 0; content-visibility: auto; contain-intrinsic-size: 150px; }}
+        .og-preview {{ max-width: 120px; max-height: 120px; object-fit: contain; border-radius: 4px; }}
+        .download-img-btn {{ background: #fff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 6px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; text-decoration: none !important; width: 100%; justify-content: center; box-sizing: border-box; }}
+        .download-img-btn:hover {{ background: #e0e7ff; border-color: #a5b4fc; text-decoration: none !important; }}
+        .download-img-btn svg {{ width: 14px; height: 14px; fill: currentColor; }}
     </style>{extra_head}
 </head>
 <body>
