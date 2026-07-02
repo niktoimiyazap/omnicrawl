@@ -7,6 +7,13 @@ import os
 import webbrowser
 import html
 
+def get_base_domain(url):
+    """Get the base domain without www."""
+    netloc = urlparse(url).netloc
+    if netloc.startswith("www."):
+        return netloc[4:]
+    return netloc
+
 def is_valid_url(url):
     """Check if the URL is valid."""
     parsed = urlparse(url)
@@ -24,9 +31,11 @@ async def get_all_website_links(session, url, domain_name):
         # ssl=False prevents CERTIFICATE_VERIFY_FAILED errors on some environments like macOS
         async with session.get(url, headers=headers, timeout=10, ssl=False) as response:
             if response.status != 200:
+                print(f"\033[93m[!] HTTP {response.status} for {url} (Bot protection?)\033[0m", file=sys.stderr)
                 return {}
             html = await response.text()
             soup = BeautifulSoup(html, "lxml")
+            actual_url = str(response.url)
     except Exception as e:
         print(f"\033[91m[-] Error accessing {url}: {e}\033[0m", file=sys.stderr)
         return {}
@@ -53,8 +62,8 @@ async def get_all_website_links(session, url, domain_name):
         link_text = " ".join(link_text.split())
         tooltip = " ".join(tooltip.split())
         
-        # Resolve relative URLs
-        href = urljoin(url, href)
+        # Resolve relative URLs using the actual redirected URL
+        href = urljoin(actual_url, href)
         parsed_href = urlparse(href)
         
         # Remove URL fragments and query parameters for clean links
@@ -64,7 +73,7 @@ async def get_all_website_links(session, url, domain_name):
             continue
         
         # Check if the URL is internal (same domain)
-        if domain_name not in href:
+        if domain_name not in get_base_domain(href):
             continue
             
         # Save link metadata (keep the first occurrence)
@@ -90,7 +99,7 @@ async def crawl(start_url, max_urls):
     print(f"[*] Starting crawl for: {start_url}")
     print(f"[*] Maximum URLs to discover: {max_urls}\n")
     
-    domain_name = urlparse(start_url).netloc
+    domain_name = get_base_domain(start_url)
     
     visited = {start_url: {'text': 'Root URL', 'tooltip': ''}}
     to_visit = {start_url}
