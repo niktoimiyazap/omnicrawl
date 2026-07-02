@@ -18,10 +18,12 @@ async def crawl(start_url, max_pages, max_items, mode, stay_in_domain=True):
     to_visit = {start_url}
     
     collected_data = {}
-    semaphore = asyncio.Semaphore(50)
+    semaphore = asyncio.Semaphore(10)
 
     async def fetch_and_parse(session, url):
+        import random
         async with semaphore:
+            await asyncio.sleep(random.uniform(0.1, 0.5))
             print(f"[*] Fetching: {url}")
             try:
                 async with session.get(url, headers=HEADERS, timeout=10, ssl=False) as response:
