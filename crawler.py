@@ -178,7 +178,16 @@ async def crawl(start_url, max_urls):
         f.write(html_content)
         
     print(f"[*] Report saved to {report_path}")
-    webbrowser.open(f"file://{report_path}")
+    
+    # Try to open the report automatically, handling macOS specifically 
+    # to avoid AppleScript/encoding errors with cyrillic paths
+    try:
+        if sys.platform == 'darwin':
+            os.system(f'open "{report_path}"')
+        else:
+            webbrowser.open(f"file://{report_path}")
+    except Exception as e:
+        print(f"\033[91m[-] Could not open browser automatically. Please open the file manually: {report_path}\033[0m")
 
 def main():
     print("=== Site Crawler ===")
