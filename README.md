@@ -2,11 +2,17 @@
 
 A high-performance, asynchronous web crawler designed to map out website structures and extract raw HTML snippets of UI components for easy reuse and analysis. Built with `asyncio`, `aiohttp`, and `BeautifulSoup4`.
 
-## Features
+## Features (4 Distinct Modes)
 
+When you run the crawler, you can choose from 4 specialized data extraction engines:
+
+1. **Classic Links Mapper**: Extracts basic internal links alongside their UI text and tooltips (`title`/`aria-label`).
+2. **UI Component Extractor**: Steals styling! Grabs the raw HTML snippet and inline CSS/classes of UI components. The generated report includes **syntax highlighting** (powered by `highlight.js`) so the code is easy to read.
+3. **Audio & Stream Hunter**: Scans the website strictly for audio assets (`.mp3`, `.wav`, `.m3u8` streams, `<audio>`, `<source>`). Great for ripping media.
+4. **SEO & Meta Auditor**: Instead of extracting links, it pulls the `<title>`, `<meta description>`, and OpenGraph (`og:image`) tags from every page it crawls, generating a full SEO health audit.
+
+### Core Architecture
 - **🚀 Asynchronous Turbo Crawling**: Utilizes `aiohttp` and `lxml` to process dozens of pages concurrently, offering massive speed improvements over synchronous scrapers.
-- **🧱 UI Component Extraction**: Automatically isolates and extracts the parent HTML blocks of links and buttons. Perfect for analyzing or borrowing styled components (especially useful for Tailwind CSS or Bootstrap sites).
-- **📝 Metadata Parsing**: Captures link text and accessibility tooltips (`title`, `aria-label`).
 - **📊 Minimalist HTML Reports**: Generates a sleek, auto-opening HTML report with a clean table view powered by the Inter font.
 - **🔄 Smart Redirect & Domain Handling**: Follows server redirects and automatically matches root domains to avoid breaking on subdomains like `www.`.
 - **🛡️ Bot-Protection Awareness**: Detects and flags non-200 HTTP responses (e.g., 403 Forbidden or 429 Too Many Requests) with color-coded terminal alerts.
