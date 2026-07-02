@@ -32,12 +32,19 @@ def run_cli():
     if not start_url.startswith("http://") and not start_url.startswith("https://"):
         start_url = "https://" + start_url
         
-    max_input = input("Enter the maximum number of pages to crawl (leave empty for infinite): ").strip()
+    max_pages_input = input("Enter the maximum number of PAGES to crawl (leave empty for infinite): ").strip()
     try:
-        max_urls = int(max_input) if max_input else 1000000
+        max_pages = int(max_pages_input) if max_pages_input else 1000000
     except ValueError:
         print("\033[91m[-] Invalid number. Defaulting to 40.\033[0m")
-        max_urls = 40
+        max_pages = 40
+        
+    max_items_input = input("Enter the maximum number of ITEMS to extract (leave empty for infinite): ").strip()
+    try:
+        max_items = int(max_items_input) if max_items_input else 1000000
+    except ValueError:
+        print("\033[91m[-] Invalid number. Defaulting to 100.\033[0m")
+        max_items = 100
         
     stay_domain_input = input("Stay within the original domain? (Y/n): ").strip().lower()
     stay_in_domain = False if stay_domain_input == 'n' else True
@@ -45,7 +52,7 @@ def run_cli():
     try:
         if sys.platform.startswith('win'):
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        asyncio.run(crawl(start_url, max_urls=max_urls, mode=mode, stay_in_domain=stay_in_domain))
+        asyncio.run(crawl(start_url, max_pages=max_pages, max_items=max_items, mode=mode, stay_in_domain=stay_in_domain))
     except KeyboardInterrupt:
         print("\n\033[91m[!] OmniCrawl interrupted by user. Generating partial report...\033[0m")
         sys.exit(0)

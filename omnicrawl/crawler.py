@@ -7,9 +7,10 @@ from omnicrawl.utils import get_base_domain
 from omnicrawl.parser import extract_internal_links, parse_page_data
 from omnicrawl.report import generate_html_report
 
-async def crawl(start_url, max_urls, mode, stay_in_domain=True):
+async def crawl(start_url, max_pages, max_items, mode, stay_in_domain=True):
     print(f"\n[*] Starting OmniCrawl for: {start_url}")
-    print(f"[*] Maximum URLs to discover: {max_urls}")
+    print(f"[*] Maximum pages to fetch: {max_pages}")
+    print(f"[*] Maximum items to extract: {max_items}")
     print(f"[*] Stay in Domain: {stay_in_domain}")
     
     domain_name = get_base_domain(start_url)
@@ -38,9 +39,9 @@ async def crawl(start_url, max_urls, mode, stay_in_domain=True):
     try:
         async with aiohttp.ClientSession(connector=connector) as session:
             fetched_count = 0
-            while to_visit and fetched_count < max_urls:
-                # Only take enough URLs from to_visit to reach max_urls
-                batch = list(to_visit)[:max_urls - fetched_count]
+            while to_visit and fetched_count < max_pages:
+                # Only take enough URLs from to_visit to reach max_pages
+                batch = list(to_visit)[:max_pages - fetched_count]
                 to_visit = set(list(to_visit)[len(batch):])
                 
                 tasks = [fetch_and_parse(session, url) for url in batch]
@@ -65,6 +66,14 @@ async def crawl(start_url, max_urls, mode, stay_in_domain=True):
                     
                     # 2. Extract Data based on Mode
                     parse_page_data(mode, soup, actual_url, collected_data)
+                    
+                    if len(collected_data) >= max_items:
+                        break
+                
+                if len(collected_data) >= max_items:
+                    print(f"\n[*] Reached max items limit ({max_items}).")
+                    collected_data = dict(list(collected_data.items())[:max_items])
+                    break
     finally:
         print(f"\n\033[92m[+] Total items collected: {len(collected_data)}\033[0m")
         if collected_data:
