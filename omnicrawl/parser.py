@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from omnicrawl.constants import MODE_CLASSIC, MODE_UI_COMPONENTS, MODE_AUDIO, MODE_SEO, AUDIO_EXTENSIONS
 from omnicrawl.utils import is_valid_url, get_base_domain
 
-def extract_internal_links(soup, actual_url, domain_name):
+def extract_internal_links(soup, actual_url, domain_name, stay_in_domain=True):
     """Finds all internal links for the crawler queue."""
     links = set()
     for a_tag in soup.find_all("a"):
@@ -14,7 +14,9 @@ def extract_internal_links(soup, actual_url, domain_name):
         parsed = urlparse(href)
         href = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
         
-        if is_valid_url(href) and domain_name in get_base_domain(href):
+        if is_valid_url(href):
+            if stay_in_domain and domain_name not in get_base_domain(href):
+                continue
             links.add(href)
     return links
 

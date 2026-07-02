@@ -7,9 +7,10 @@ from omnicrawl.utils import get_base_domain
 from omnicrawl.parser import extract_internal_links, parse_page_data
 from omnicrawl.report import generate_html_report
 
-async def crawl(start_url, max_urls, mode):
+async def crawl(start_url, max_urls, mode, stay_in_domain=True):
     print(f"\n[*] Starting OmniCrawl for: {start_url}")
     print(f"[*] Maximum URLs to discover: {max_urls}")
+    print(f"[*] Stay in Domain: {stay_in_domain}")
     
     domain_name = get_base_domain(start_url)
     visited_urls = {start_url}
@@ -20,6 +21,7 @@ async def crawl(start_url, max_urls, mode):
 
     async def fetch_and_parse(session, url):
         async with semaphore:
+            print(f"[*] Fetching: {url}")
             try:
                 async with session.get(url, headers=HEADERS, timeout=10, ssl=False) as response:
                     if response.status != 200:
@@ -54,7 +56,7 @@ async def crawl(start_url, max_urls, mode):
                     continue
                 
                 # 1. Discover internal links for the crawler queue
-                new_links = extract_internal_links(soup, actual_url, domain_name)
+                new_links = extract_internal_links(soup, actual_url, domain_name, stay_in_domain)
                 for href in new_links:
                     if href not in visited_urls:
                         visited_urls.add(href)
