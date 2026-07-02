@@ -34,9 +34,14 @@ async def crawl(start_url, max_urls, mode):
 
     connector = aiohttp.TCPConnector(limit=100)
     async with aiohttp.ClientSession(connector=connector) as session:
-        while to_visit and len(visited_urls) < max_urls:
-            tasks = [fetch_and_parse(session, url) for url in to_visit]
-            to_visit = set()
+        fetched_count = 0
+        while to_visit and fetched_count < max_urls:
+            # Only take enough URLs from to_visit to reach max_urls
+            batch = list(to_visit)[:max_urls - fetched_count]
+            to_visit = set(list(to_visit)[len(batch):])
+            
+            tasks = [fetch_and_parse(session, url) for url in batch]
+            fetched_count += len(batch)
             
             results = await asyncio.gather(*tasks, return_exceptions=True)
             
@@ -51,7 +56,7 @@ async def crawl(start_url, max_urls, mode):
                 # 1. Discover internal links for the crawler queue
                 new_links = extract_internal_links(soup, actual_url, domain_name)
                 for href in new_links:
-                    if href not in visited_urls and len(visited_urls) < max_urls:
+                    if href not in visited_urls:
                         visited_urls.add(href)
                         to_visit.add(href)
                 
