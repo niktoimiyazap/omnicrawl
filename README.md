@@ -1,13 +1,13 @@
-# UI Component Extractor
+# OmniCrawl
 
-A high-performance, asynchronous web crawler designed to map out website structures and extract raw HTML snippets of UI components for easy reuse and analysis. Built with `asyncio`, `aiohttp`, and `BeautifulSoup4`.
+A universal, high-performance asynchronous web extraction framework for structural analysis, UI component isolation, and SEO auditing. Built with `asyncio`, `aiohttp`, and `BeautifulSoup4`.
 
 ## Features (4 Distinct Modes)
 
 When you run the crawler, you can choose from 4 specialized data extraction engines:
 
 1. **Classic Links Mapper**: Extracts basic internal links alongside their UI text and tooltips (`title`/`aria-label`).
-2. **UI Component Extractor**: Steals styling! Grabs the raw HTML snippet and inline CSS/classes of UI components. The generated report includes **syntax highlighting** (powered by `highlight.js`) so the code is easy to read.
+2. **UI Component Extractor (with Sandbox)**: Steals styling! Grabs the raw HTML snippet and inline CSS/classes of UI components. The generated report includes **syntax highlighting** and a **▶️ Sandbox button** that lets you visually preview the extracted component directly in your browser.
 3. **Audio & Stream Hunter**: Scans the website strictly for audio assets (`.mp3`, `.wav`, `.m3u8` streams, `<audio>`, `<source>`). Great for ripping media.
 4. **SEO & Meta Auditor**: Instead of extracting links, it pulls the `<title>`, `<meta description>`, and OpenGraph (`og:image`) tags from every page it crawls, generating a full SEO health audit.
 
@@ -29,8 +29,8 @@ When you run the crawler, you can choose from 4 specialized data extraction engi
 Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/niktoimiyazap/ui-component-extractor.git
-cd ui-component-extractor
+git clone https://github.com/niktoimiyazap/omnicrawl.git
+cd omnicrawl
 pip install -r requirements.txt
 ```
 
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Simply run the script. It operates in an interactive mode:
 
 ```bash
-python3 crawler.py
+python3 main.py
 ```
 
 1. **Enter the URL**: e.g., `example.com` or `https://example.com`
