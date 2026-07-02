@@ -18,7 +18,8 @@ async def get_all_website_links(session, url, domain_name):
     }
     
     try:
-        async with session.get(url, headers=headers, timeout=10) as response:
+        # ssl=False prevents CERTIFICATE_VERIFY_FAILED errors on some environments like macOS
+        async with session.get(url, headers=headers, timeout=10, ssl=False) as response:
             if response.status != 200:
                 return {}
             html = await response.text()
