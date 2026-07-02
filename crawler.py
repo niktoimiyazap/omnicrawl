@@ -5,6 +5,7 @@ from urllib.parse import urlparse, urljoin
 import sys
 import os
 import webbrowser
+import html
 
 def is_valid_url(url):
     """Check if the URL is valid."""
@@ -68,9 +69,18 @@ async def get_all_website_links(session, url, domain_name):
             
         # Save link metadata (keep the first occurrence)
         if href not in urls_info:
+            # Extract the raw HTML of the parent element for component stealing
+            parent = a_tag.parent
+            parent_html = str(parent) if parent else str(a_tag)
+            
+            # If the parent is too huge (e.g., the whole page or a massive container), just take the a_tag
+            if len(parent_html) > 1000:
+                parent_html = str(a_tag)
+                
             urls_info[href] = {
                 'text': link_text,
-                'tooltip': tooltip
+                'tooltip': tooltip,
+                'html_snippet': html.escape(parent_html)
             }
         
     return urls_info
@@ -144,15 +154,18 @@ async def crawl(start_url, max_urls):
                 <th>URL</th>
                 <th>Link Text</th>
                 <th>Tooltip</th>
+                <th>Component HTML (UI)</th>
             </tr>
         </thead>
         <tbody>
 """
     for url, info in sorted(visited.items()):
+        html_snippet = info.get('html_snippet', '')
         html_content += f"""            <tr>
                 <td><a href="{url}" target="_blank">{url}</a></td>
                 <td>{info['text']}</td>
                 <td>{info['tooltip']}</td>
+                <td><pre style="max-width: 400px; max-height: 150px; overflow: auto; background: #f3f4f6; padding: 8px; border-radius: 4px; font-size: 11px;"><code>{html_snippet}</code></pre></td>
             </tr>\n"""
             
     html_content += """        </tbody>
