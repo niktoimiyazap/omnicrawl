@@ -38,7 +38,17 @@ def parse_page_data(mode, soup, actual_url, collected_data):
             parsed = urlparse(href)
             href = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
             
-            if href not in collected_data:
+            # Determine uniqueness key based on mode
+            if mode == MODE_UI_COMPONENTS:
+                parent = a_tag.parent
+                parent_html = str(parent) if parent else str(a_tag)
+                if len(parent_html) > 1500: 
+                    parent_html = str(a_tag)
+                unique_key = str(hash(parent_html))
+            else:
+                unique_key = href
+                
+            if unique_key not in collected_data:
                 link_text = a_tag.get_text(strip=True)
                 if not link_text:
                     img = a_tag.find("img")
@@ -55,15 +65,11 @@ def parse_page_data(mode, soup, actual_url, collected_data):
                 info = {'url': href, 'text': link_text, 'tooltip': tooltip}
                 
                 if mode == MODE_UI_COMPONENTS:
-                    parent = a_tag.parent
-                    parent_html = str(parent) if parent else str(a_tag)
-                    if len(parent_html) > 1500: 
-                        parent_html = str(a_tag)
                     info['html'] = html.escape(parent_html)
                     info['raw_html'] = parent_html
                     info['page_styles'] = page_styles
                     
-                collected_data[href] = info
+                collected_data[unique_key] = info
                 if mode == MODE_CLASSIC:
                     print(f"\033[92m[+] Discovered Link: {href}\033[0m")
                 else:
