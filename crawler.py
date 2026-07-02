@@ -33,8 +33,8 @@ async def get_all_website_links(session, url, domain_name):
             if response.status != 200:
                 print(f"\033[93m[!] HTTP {response.status} for {url} (Bot protection?)\033[0m", file=sys.stderr)
                 return {}
-            html = await response.text()
-            soup = BeautifulSoup(html, "lxml")
+            html_text = await response.text()
+            soup = BeautifulSoup(html_text, "lxml")
             actual_url = str(response.url)
     except Exception as e:
         print(f"\033[91m[-] Error accessing {url}: {e}\033[0m", file=sys.stderr)
